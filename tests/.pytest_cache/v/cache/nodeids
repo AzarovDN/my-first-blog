@@ -1,0 +1,5 @@
+[
+  "test_models.py::YourTestClass::test_false_is_false",
+  "test_models.py::YourTestClass::test_false_is_true",
+  "test_models.py::YourTestClass::test_one_plus_one_equals_two"
+]
