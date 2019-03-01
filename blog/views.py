@@ -4,12 +4,14 @@ from .models import Post
 from django.shortcuts import render, get_object_or_404
 from .forms import PostForm
 from django.shortcuts import redirect
-from django.views import generic
+from django.views.generic import ListView, DetailView, UpdateView
+from django.views.generic.edit import CreateView
+from django.contrib.auth.models import User
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class PostListView(generic.ListView):
+class PostListView(ListView):
     posts = Post
     template_name = 'blog/post_list.html'
 
@@ -17,59 +19,31 @@ class PostListView(generic.ListView):
         return Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
 
 
-class PostDetailView(generic.DetailView):
+class PostDetailView(DetailView):
     model = Post
 
 
-
-class PostNewView(generic.edit.CreateView):
+class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     form = PostForm
     fields = ['title', 'text']
 
     def form_valid(self, form):
         post = form.save(commit=False)
-        post.author = 'admin'
+        post.author = self.request.user
         post.published_date = timezone.now()
         post.save()
-        # return redirect('post_detail', pk=post.pk)
+        return redirect('post_detail', pk=post.pk)
 
 
+class PostEditView(LoginRequiredMixin, UpdateView):
+    model = Post
+    form = PostForm
+    fields = ['title', 'text']
+    template_name_suffix = '_update_form'
 
-# def post_new(request):
-#     if request.method == "POST":
-#         form = PostForm(request.POST)
-#         if form.is_valid():
-#             post = form.save(commit=False)
-#             post.author = request.user
-#             post.published_date = timezone.now()
-#             post.save()
-#             return redirect('post_detail', pk=post.pk)
-#     else:
-#         form = PostForm()
-#     return render(request, 'blog/post_edit.html', {'form': form})
-
-
-def post_edit(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    if request.method == "POST":
-        form = PostForm(request.POST, instance=post)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.author = request.user
-            # post.published_date = timezone.now()
-            post.save()
-            return redirect('post_detail', pk=post.pk)
-    else:
-        form = PostForm(instance=post)
-    return render(request, 'blog/post_edit.html', {'form': form})
-
-
-# def post_list(request):
-#     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
-#     return render(request, 'blog/post_list.html', {'posts': posts})
-
-
-# def post_detail(request, pk):
-#     post = get_object_or_404(Post, pk=pk)
-#     return render(request, 'blog/post_detail.html', {'post': post})
+    def form_valid(self, form):
+        post = form.save(commit=False)
+        post.author = self.request.user
+        post.save()
+        return redirect('post_detail', pk=post.pk)
