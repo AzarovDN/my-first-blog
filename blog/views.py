@@ -4,7 +4,6 @@ from .forms import PostForm
 from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView, UpdateView
 from django.views.generic.edit import CreateView
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
