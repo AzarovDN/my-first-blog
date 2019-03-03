@@ -8,8 +8,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class PostListView(ListView):
-    posts = Post
-    template_name = 'blog/post_list.html'
+    # posts = Post
+    # template_name = 'blog/post_list.html'
 
     def get_queryset(self):
         return Post.objects.filter(published_date__lte=timezone.now()).order_by('-published_date')
