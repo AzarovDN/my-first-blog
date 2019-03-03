@@ -63,5 +63,7 @@ class ListViewsTest(TestCase):
         result = PostListView.get_queryset(post_list)
         self.assertEqual(result[0], post2)
         self.assertEqual(result[1], post1)
+        # Как я хотел сделать
+        # self.assertEqual(PostListView.get_queryset(post_list), [post2, post1])
 
 
